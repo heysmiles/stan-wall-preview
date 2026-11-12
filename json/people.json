@@ -1,0 +1,438 @@
+[
+ {
+  "id": "levi-strauss",
+  "name": "Levi Strauss",
+  "built": "Levi Strauss & Co.",
+  "year": 1873,
+  "origin": "Bavaria → San Francisco",
+  "bet": "A dry-goods wholesaler, he partnered with tailor Jacob Davis and paid to patent riveted work pants, turning a supply shop into a clothing company.",
+  "n": 1,
+  "photo": true
+ },
+ {
+  "id": "andrew-carnegie",
+  "name": "Andrew Carnegie",
+  "built": "Carnegie Steel",
+  "year": 1875,
+  "origin": "Scotland → Pittsburgh",
+  "bet": "A former bobbin boy earning $1.20 a week, he put his fortune into a Bessemer steel mill built through the depression that followed the Panic of 1873.",
+  "n": 2,
+  "photo": true
+ },
+ {
+  "id": "thomas-edison",
+  "name": "Thomas Edison",
+  "built": "Edison's labs, later General Electric",
+  "year": 1869,
+  "origin": "Ohio → New Jersey",
+  "bet": "He quit his job as a telegraph operator to invent full-time, right after his first patent, an electric vote recorder, failed to find a single buyer.",
+  "crop": [
+   0.25,
+   0.02,
+   0.85,
+   0.65
+  ],
+  "n": 3,
+  "photo": true
+ },
+ {
+  "id": "milton-hershey",
+  "name": "Milton Hershey",
+  "built": "The Hershey Company",
+  "year": 1900,
+  "origin": "Pennsylvania",
+  "bet": "After candy businesses failed in Philadelphia, Chicago and New York, he sold his one success, a caramel company, for $1 million to bet everything on milk chocolate.",
+  "n": 4,
+  "photo": true
+ },
+ {
+  "id": "henry-ford",
+  "name": "Henry Ford",
+  "built": "Ford Motor Company",
+  "year": 1903,
+  "origin": "Michigan",
+  "bet": "Two car companies collapsed under him, so at 39 he started a third and built it around one idea: a car ordinary workers could afford.",
+  "n": 5,
+  "photo": true
+ },
+ {
+  "id": "madam-cj-walker",
+  "name": "Madam C.J. Walker",
+  "built": "Madam C.J. Walker Manufacturing Co.",
+  "year": 1905,
+  "origin": "Louisiana → Indianapolis",
+  "bet": "The daughter of formerly enslaved parents, she left work as a laundress to sell her own hair-care formula door to door, and became one of America's first self-made women millionaires.",
+  "n": 6,
+  "photo": true
+ },
+ {
+  "id": "coco-chanel",
+  "name": "Coco Chanel",
+  "built": "Chanel",
+  "year": 1910,
+  "origin": "France",
+  "bet": "A former cabaret singer with no formal training, she opened a hat shop at 21 rue Cambon in Paris and grew it into a fashion house.",
+  "n": 7,
+  "photo": true
+ },
+ {
+  "id": "elizabeth-arden",
+  "name": "Elizabeth Arden",
+  "built": "Elizabeth Arden, Inc.",
+  "year": 1910,
+  "origin": "Canada → New York",
+  "bet": "She opened a beauty salon behind a red door on Fifth Avenue at a time when respectable women in New York rarely wore makeup.",
+  "crop": [
+   0.15,
+   0.0,
+   0.8,
+   0.65
+  ],
+  "n": 8,
+  "photo": true
+ },
+ {
+  "id": "konosuke-matsushita",
+  "name": "Konosuke Matsushita",
+  "built": "Panasonic",
+  "year": 1918,
+  "origin": "Japan",
+  "bet": "At 22 he quit a stable job at the Osaka power company to make a better light socket, and his first version failed to sell.",
+  "n": 9,
+  "photo": true
+ },
+ {
+  "id": "walt-disney",
+  "name": "Walt Disney",
+  "built": "The Walt Disney Company",
+  "year": 1923,
+  "origin": "Missouri → Los Angeles",
+  "bet": "After his Kansas City studio went bankrupt, he moved to Hollywood with about $40 and an unfinished film, and started over with his brother Roy.",
+  "n": 10,
+  "photo": true
+ },
+ {
+  "id": "soichiro-honda",
+  "name": "Soichiro Honda",
+  "built": "Honda",
+  "year": 1946,
+  "origin": "Japan",
+  "bet": "After bombing and an earthquake destroyed his piston-ring factory, he sold what remained and started bolting small surplus engines onto bicycles.",
+  "n": 11,
+  "photo": true
+ },
+ {
+  "id": "akio-morita",
+  "name": "Akio Morita",
+  "built": "Sony",
+  "year": 1946,
+  "origin": "Japan",
+  "bet": "Heir to a family sake business that went back 14 generations, he walked away to start an electronics company in a bombed-out Tokyo department store.",
+  "n": 12,
+  "photo": true
+ },
+ {
+  "id": "estee-lauder",
+  "name": "Estée Lauder",
+  "built": "The Estée Lauder Companies",
+  "year": 1946,
+  "origin": "New York",
+  "bet": "She launched with four skin-care products and personally talked her way onto a counter at Saks Fifth Avenue.",
+  "crop": [
+   0.0,
+   0.0,
+   0.55,
+   0.7
+  ],
+  "n": 13,
+  "photo": true
+ },
+ {
+  "id": "yvon-chouinard",
+  "name": "Yvon Chouinard",
+  "built": "Patagonia",
+  "year": 1957,
+  "origin": "Maine → California",
+  "bet": "He taught himself blacksmithing to forge reusable climbing pitons and sold them from the back of his car.",
+  "n": 14,
+  "photo": true
+ },
+ {
+  "id": "dhirubhai-ambani",
+  "name": "Dhirubhai Ambani",
+  "built": "Reliance Industries",
+  "year": 1958,
+  "origin": "India",
+  "bet": "He left a job working at a fuel station in Aden and returned to Mumbai to start a small yarn-trading business.",
+  "crop": [
+   0.2,
+   0.0,
+   0.8,
+   0.5
+  ],
+  "n": 15,
+  "photo": true
+ },
+ {
+  "id": "sam-walton",
+  "name": "Sam Walton",
+  "built": "Walmart",
+  "year": 1962,
+  "origin": "Arkansas",
+  "bet": "His franchisor turned down his plan for discount stores in small towns, so he borrowed heavily and opened the first Walmart himself.",
+  "n": 16,
+  "photo": true
+ },
+ {
+  "id": "mary-kay-ash",
+  "name": "Mary Kay Ash",
+  "built": "Mary Kay Cosmetics",
+  "year": 1963,
+  "origin": "Texas",
+  "bet": "Passed over for a man she had trained, she put her $5,000 life savings into her own company and launched one month after her husband died.",
+  "n": 17,
+  "photo": true
+ },
+ {
+  "id": "phil-knight",
+  "name": "Phil Knight",
+  "built": "Nike",
+  "year": 1964,
+  "origin": "Oregon",
+  "bet": "He and his old track coach put in $500 each to import Japanese running shoes, which he sold out of his car at track meets.",
+  "crop": [
+   0.0,
+   0.1,
+   0.72,
+   0.85
+  ],
+  "n": 18,
+  "photo": true
+ },
+ {
+  "id": "ralph-lauren",
+  "name": "Ralph Lauren",
+  "built": "Ralph Lauren",
+  "year": 1967,
+  "origin": "New York",
+  "bet": "A tie salesman with no design training, he started a label of his own with a single product: wide neckties.",
+  "n": 19,
+  "photo": true
+ },
+ {
+  "id": "giorgio-armani",
+  "name": "Giorgio Armani",
+  "built": "Giorgio Armani S.p.A.",
+  "year": 1975,
+  "origin": "Italy",
+  "bet": "At 40 he sold his Volkswagen Beetle to fund his own label with his partner Sergio Galeotti.",
+  "n": 20,
+  "photo": true
+ },
+ {
+  "id": "bill-gates",
+  "name": "Bill Gates",
+  "built": "Microsoft",
+  "year": 1975,
+  "origin": "Washington",
+  "bet": "He left Harvard to write software for a hobbyist computer kit, on the bet that every desk would one day have a computer on it.",
+  "n": 21,
+  "photo": true
+ },
+ {
+  "id": "steve-jobs",
+  "name": "Steve Jobs",
+  "built": "Apple",
+  "year": 1976,
+  "origin": "California",
+  "bet": "He sold his VW van, and Steve Wozniak sold his calculator, to pay for the first batch of Apple I boards.",
+  "n": 22,
+  "photo": true
+ },
+ {
+  "id": "anita-roddick",
+  "name": "Anita Roddick",
+  "built": "The Body Shop",
+  "year": 1976,
+  "origin": "England",
+  "bet": "With a £4,000 bank loan and two young daughters to support, she opened a small cosmetics shop in Brighton.",
+  "n": 23,
+  "photo": true
+ },
+ {
+  "id": "aliko-dangote",
+  "name": "Aliko Dangote",
+  "built": "Dangote Group",
+  "year": 1977,
+  "origin": "Nigeria",
+  "bet": "He started trading commodities in Lagos on a loan from his uncle and later moved from trading goods to making them.",
+  "n": 24,
+  "photo": true
+ },
+ {
+  "id": "kiran-mazumdar-shaw",
+  "name": "Kiran Mazumdar-Shaw",
+  "built": "Biocon",
+  "year": 1978,
+  "origin": "India",
+  "bet": "Turned away from brewmaster jobs because she was a woman, she started a biotech company in a Bangalore garage.",
+  "n": 25,
+  "photo": true
+ },
+ {
+  "id": "narayana-murthy",
+  "name": "N. R. Narayana Murthy",
+  "built": "Infosys",
+  "year": 1981,
+  "origin": "India",
+  "bet": "He co-founded an IT services company with six colleagues on ₹10,000 borrowed from his wife, Sudha Murty.",
+  "n": 26,
+  "photo": true
+ },
+ {
+  "id": "richard-branson",
+  "name": "Richard Branson",
+  "built": "Virgin Group",
+  "year": 1984,
+  "origin": "England",
+  "bet": "A record-label owner with no aviation experience, he started an airline with one leased Boeing 747.",
+  "n": 27,
+  "photo": true
+ },
+ {
+  "id": "oprah-winfrey",
+  "name": "Oprah Winfrey",
+  "built": "Harpo Productions",
+  "year": 1988,
+  "origin": "Mississippi → Chicago",
+  "bet": "She took ownership of her talk show and became the first woman to own and produce her own.",
+  "n": 28,
+  "photo": true
+ },
+ {
+  "id": "vera-wang",
+  "name": "Vera Wang",
+  "built": "Vera Wang",
+  "year": 1990,
+  "origin": "New York",
+  "bet": "At 40, after 16 years as a Vogue editor, she opened her own bridal boutique.",
+  "n": 29,
+  "photo": true
+ },
+ {
+  "id": "daymond-john",
+  "name": "Daymond John",
+  "built": "FUBU",
+  "year": 1992,
+  "origin": "New York",
+  "bet": "Waiting tables at Red Lobster, he mortgaged his mother's house for $100,000 and turned it into a clothing factory.",
+  "n": 30,
+  "photo": true
+ },
+ {
+  "id": "jensen-huang",
+  "name": "Jensen Huang",
+  "built": "NVIDIA",
+  "year": 1993,
+  "origin": "Taiwan → California",
+  "bet": "He left a stable job at LSI Logic to start a graphics-chip company with two co-founders, after planning it in a Denny's booth.",
+  "n": 31,
+  "photo": true
+ },
+ {
+  "id": "jeff-bezos",
+  "name": "Jeff Bezos",
+  "built": "Amazon",
+  "year": 1994,
+  "origin": "New Mexico → Seattle",
+  "bet": "He left a senior job at a hedge fund to sell books online out of his garage in Bellevue.",
+  "n": 32,
+  "photo": true
+ },
+ {
+  "id": "strive-masiyiwa",
+  "name": "Strive Masiyiwa",
+  "built": "Econet",
+  "year": 1998,
+  "origin": "Zimbabwe",
+  "bet": "He spent five years fighting a state telecom monopoly in court for the right to launch a mobile network.",
+  "crop": [
+   0.15,
+   0.05,
+   0.75,
+   0.6
+  ],
+  "n": 33,
+  "photo": true
+ },
+ {
+  "id": "mo-ibrahim",
+  "name": "Mo Ibrahim",
+  "built": "Celtel",
+  "year": 1998,
+  "origin": "Sudan → London",
+  "bet": "He built mobile networks across Africa at a time when most operators judged the continent too risky.",
+  "n": 34,
+  "photo": true
+ },
+ {
+  "id": "sara-blakely",
+  "name": "Sara Blakely",
+  "built": "Spanx",
+  "year": 1998,
+  "origin": "Florida → Atlanta",
+  "bet": "Selling fax machines door to door, she put her entire $5,000 in savings into a footless pantyhose prototype and wrote her own patent.",
+  "n": 35,
+  "photo": true
+ },
+ {
+  "id": "jack-ma",
+  "name": "Jack Ma",
+  "built": "Alibaba",
+  "year": 1999,
+  "origin": "China",
+  "bet": "A former English teacher, he gathered 17 friends in his Hangzhou apartment to build an online marketplace for small businesses.",
+  "n": 36,
+  "photo": true
+ },
+ {
+  "id": "brian-chesky",
+  "name": "Brian Chesky",
+  "built": "Airbnb",
+  "year": 2007,
+  "origin": "New York → San Francisco",
+  "bet": "Unable to make rent, he rented air mattresses on his floor and later sold novelty cereal boxes to keep the company alive.",
+  "n": 37,
+  "photo": true
+ },
+ {
+  "id": "jan-koum",
+  "name": "Jan Koum",
+  "built": "WhatsApp",
+  "year": 2009,
+  "origin": "Ukraine → California",
+  "bet": "An immigrant whose family once relied on food stamps, he used his savings to build a messaging app with no ads.",
+  "n": 38,
+  "photo": true
+ },
+ {
+  "id": "melanie-perkins",
+  "name": "Melanie Perkins",
+  "built": "Canva",
+  "year": 2013,
+  "origin": "Australia",
+  "bet": "A student from Perth, she spent three years pitching investors and was turned down more than 100 times before Canva launched.",
+  "n": 39,
+  "photo": true
+ },
+ {
+  "id": "whitney-wolfe-herd",
+  "name": "Whitney Wolfe Herd",
+  "built": "Bumble",
+  "year": 2014,
+  "origin": "Utah → Austin",
+  "bet": "She started a dating app where women make the first move and later became the youngest woman to take a company public.",
+  "n": 40,
+  "photo": true
+ }
+]
