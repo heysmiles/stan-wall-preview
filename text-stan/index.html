@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text Stan Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="app-css">
+:root {
+  /* Layout: an edit toolbar on top; below it a quiet rail of the rules on the left and the entrant's phone on the right. The rail tracks the phone's scroll. */
+  --bg: #f1eff6;
+  --ink: #1b1726;
+  --muted: #6c6680;
+  --line: #dcd7e8;
+  --accent: #6b3fd6;
+  --accent-soft: #e7defb;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --ios: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); }
+.page { min-height: 100%; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 14px 16px 24px; }
+
+/* Toolbar */
+.toolbar {
+  width: 100%; max-width: 900px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 8px 8px 8px 16px;
+  background: #fff; border: 1px solid var(--line); border-radius: 14px;
+}
+.tb-left { display: flex; align-items: baseline; gap: 12px; min-width: 0; flex-wrap: wrap; }
+.tb-title { font-weight: 700; font-size: 14px; }
+.status { font-size: 13px; color: var(--muted); }
+.status.warn { color: #a3580b; }
+.status.bad { color: #b42318; }
+.status.good { color: #1f7a3f; }
+.tb-right { display: flex; gap: 8px; flex-wrap: wrap; }
+.tb {
+  font: 600 13.5px var(--body);
+  border-radius: 999px; padding: 8px 14px;
+  border: 1.5px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer;
+}
+.tb.ghost { background: transparent; color: var(--accent); }
+.tb.danger { border-color: #b42318; color: #b42318; background: transparent; }
+.tb.danger.arm { background: #b42318; color: #fff; }
+.tb:disabled { opacity: .45; cursor: not-allowed; }
+.tb:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.hint {
+  width: 100%; max-width: 900px; display: none;
+  font-size: 13.5px; line-height: 1.4; color: var(--ink);
+  background: var(--accent-soft); border-radius: 12px; padding: 10px 14px;
+}
+.editing .hint { display: block; }
+
+.wrap {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) auto;
+  gap: 56px;
+  align-items: center;
+  max-width: 900px;
+  width: 100%;
+}
+
+/* Rail */
+.rail h1 {
+  font-family: var(--display); font-weight: 800; font-size: 30px; line-height: 1.1;
+  letter-spacing: -0.01em; margin: 0 0 10px; text-wrap: balance;
+}
+.rail .lede { color: var(--muted); font-size: 15px; line-height: 1.45; margin: 0 0 22px; }
+.rail .lede b { color: var(--ink); font-weight: 600; }
+.steps { display: grid; gap: 4px; }
+.step {
+  cursor: pointer;
+  display: grid; grid-template-columns: 30px 1fr; gap: 2px 10px;
+  padding: 9px 12px; border-radius: 12px; transition: background .2s;
+}
+.step:hover { background: rgba(107, 63, 214, .06); }
+.step:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.step .n {
+  grid-row: span 2; width: 26px; height: 26px; border-radius: 50%;
+  border: 1.5px solid var(--line); color: var(--muted);
+  font-size: 13px; font-weight: 700; display: grid; place-items: center;
+  font-variant-numeric: tabular-nums; transition: all .2s;
+}
+.step .t { font-weight: 700; font-size: 15px; }
+.step .t small { font-weight: 500; color: var(--muted); font-size: 12.5px; margin-left: 6px; }
+.step .d { color: var(--muted); font-size: 13.5px; line-height: 1.35; }
+.step.on { background: var(--accent-soft); }
+.step.on .n { background: var(--accent); border-color: var(--accent); color: #fff; }
+.step.done .n { border-color: var(--accent); color: var(--accent); }
+.rhythm {
+  margin: 18px 0 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px;
+  font-size: 13px; line-height: 1.5; color: var(--muted);
+}
+.rhythm b { color: var(--ink); }
+.controls { display: flex; gap: 8px; margin-top: 16px; }
+.controls button {
+  font: 600 14px var(--body); border-radius: 999px; padding: 9px 16px;
+  border: 1.5px solid var(--accent); background: var(--accent); color: #fff; cursor: pointer;
+}
+.controls button.ghost { background: transparent; color: var(--accent); }
+.controls button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.foot { margin-top: 14px; font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* Editable text */
+.editing [data-edit] {
+  outline: 1.5px dashed rgba(107, 63, 214, .5); outline-offset: 2px; border-radius: 4px; cursor: text;
+}
+.editing [data-edit]:focus { outline: 2px solid var(--accent); }
+.editing .step { cursor: default; }
+.editing .bubble[data-edit] { outline-offset: 1px; border-radius: 19px; }
+
+/* Phone */
+.phone {
+  width: 380px;
+  height: clamp(560px, calc(100dvh - 110px), 800px);
+  border-radius: 58px; background: #121114; padding: 12px;
+  box-shadow: 0 0 0 2px #2c2a31, 0 30px 60px -20px rgba(40, 20, 80, .35), 0 12px 24px -12px rgba(0,0,0,.3);
+  position: relative;
+}
+.screen {
+  height: 100%; border-radius: 46px; overflow: hidden; background: #fff;
+  display: flex; flex-direction: column; font-family: var(--ios); position: relative;
+}
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 118px; height: 34px; border-radius: 20px; background: #000; z-index: 5; }
+.status-bar { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 30px 0 34px; font-weight: 600; font-size: 16px; color: #000; }
+.status-bar .icons { display: flex; gap: 6px; align-items: center; }
+.nav { flex: none; display: grid; grid-template-columns: 60px 1fr 60px; align-items: center; padding: 2px 12px 10px; border-bottom: 0.5px solid #d8d8dc; background: rgba(249, 249, 251, .96); }
+.nav .back { display: flex; align-items: center; }
+.nav .who { display: grid; justify-items: center; gap: 4px; }
+.avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: #fff; font: 700 22px var(--display); display: grid; place-items: center; }
+.nav .name { font-size: 12px; color: #000; display: flex; align-items: center; gap: 2px; }
+.thread { flex: 1; overflow-y: auto; padding: 8px 14px 20px; overscroll-behavior: contain; }
+.thread::-webkit-scrollbar { width: 0; }
+.stamp-row { display: flex; justify-content: center; margin: 18px 0 8px; }
+.stamp { text-align: center; font-size: 11.5px; color: #8a8a8e; }
+.stamp b { font-weight: 600; }
+.row { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+.row.me { justify-content: flex-end; }
+.row.gap { margin-top: 10px; }
+.bubble {
+  max-width: 78%; padding: 8px 13px; border-radius: 19px;
+  font-size: 16px; line-height: 1.32; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.editing .bubble { max-width: 68%; }
+.stan .bubble { background: #e9e9eb; color: #000; }
+.me .bubble { background: #0a84ff; color: #fff; }
+.stan .bubble a { color: #0a63d1; }
+.me .bubble a { color: #fff; }
+.bubble a { text-decoration: underline; text-underline-offset: 2px; }
+.shot {
+  width: 64%; border-radius: 16px; overflow: hidden; border: 0.5px solid #d6d6db;
+  background: linear-gradient(160deg, #f6f4fb, #ece8f6); padding: 12px; font-size: 13px; color: #1b1726;
+}
+.shot .card { background: #fff; border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 2px rgba(0,0,0,.08); display: grid; gap: 1px; }
+.shot .app { font-size: 11px; color: #8a8a8e; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 3px; }
+.shot .big { font-weight: 700; font-size: 15px; }
+.shot .amt { font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tools { display: none; gap: 2px; flex: none; }
+.editing .tools { display: flex; }
+.tools button {
+  width: 24px; height: 24px; border-radius: 50%; border: 1px solid #d8d8dc; background: #fff;
+  color: #55505f; font: 600 12px var(--body); cursor: pointer; display: grid; place-items: center; padding: 0;
+}
+.tools button:hover { border-color: var(--accent); color: var(--accent); }
+.tools button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.compose { flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px 6px; background: #fff; }
+.compose .plus { width: 34px; height: 34px; border-radius: 50%; background: #efeff2; color: #8a8a8e; display: grid; place-items: center; font-size: 22px; }
+.compose .field { flex: 1; height: 36px; border-radius: 18px; border: 1px solid #d8d8dc; color: #b0b0b5; font-size: 16px; display: flex; align-items: center; padding: 0 14px; }
+.homebar { flex: none; height: 24px; display: grid; place-items: center; }
+.homebar span { width: 134px; height: 5px; border-radius: 3px; background: #000; }
+
+@media (max-width: 760px) {
+  .wrap { grid-template-columns: 1fr; gap: 28px; justify-items: center; }
+  .rail { max-width: 420px; }
+  .phone { width: min(380px, 100%); height: 720px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .step, .step .n { transition: none; }
+}
+</style>
+<style>.toolbar,.hint{display:none!important}</style>
+</head>
+<body>
+<template id="shell">
+<div class="page" id="page">
+  <div class="toolbar" role="toolbar" aria-label="Edit this walkthrough">
+    <div class="tb-left"><span class="tb-title">Text Stan Walkthrough</span><span class="status" id="status" aria-live="polite"></span></div>
+    <div class="tb-right">
+      <button type="button" class="tb danger" id="revert">Revert to Original</button>
+      <button type="button" class="tb ghost" id="save">Save Current Changes</button>
+      <button type="button" class="tb" id="edit">Edit Text</button>
+    </div>
+  </div>
+  <p class="hint">Click any outlined text, on the phone or in the overview, to change it. Beside each message, ⇄ moves it to the other side, + adds a message below it, and × deletes it. Save Current Changes publishes your edits for everyone who opens this page.</p>
+  <main class="wrap">
+    <section class="rail" aria-label="How the rules work">
+      <h1 id="r-title"></h1>
+      <p class="lede"><b id="r-ledeBold"></b> <span id="r-lede"></span></p>
+      <div class="steps" id="steps"></div>
+      <p class="rhythm"><b id="r-rhythmBold"></b> <span id="r-rhythm"></span></p>
+      <div class="controls">
+        <button type="button" id="play">Play the six weeks</button>
+        <button type="button" class="ghost" id="restart">Back to the start</button>
+      </div>
+      <p class="foot" id="r-foot"></p>
+    </section>
+    <div class="phone" aria-label="iPhone showing the Text Stan conversation">
+      <div class="screen">
+        <div class="island" aria-hidden="true"></div>
+        <div class="status-bar" aria-hidden="true">
+          <span>9:41</span>
+          <span class="icons">
+            <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#000"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#000"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#000"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#000"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0L8 11.5Z" fill="#000"/><path d="M3.4 6.8a6.5 6.5 0 0 1 9.2 0l-1.3 1.3a4.7 4.7 0 0 0-6.6 0L3.4 6.8Z" fill="#000"/><path d="M1.2 4.6a9.6 9.6 0 0 1 13.6 0l-1.3 1.3a7.8 7.8 0 0 0-11 0L1.2 4.6Z" fill="#000"/></svg>
+            <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#000" opacity=".4"/><rect x="2" y="2" width="18" height="9" rx="2" fill="#000"/><rect x="24.5" y="4.5" width="1.6" height="4" rx=".8" fill="#000" opacity=".4"/></svg>
+          </span>
+        </div>
+        <div class="nav">
+          <span class="back" aria-hidden="true"><svg width="12" height="20" viewBox="0 0 12 20"><path d="M10 2 2 10l8 8" fill="none" stroke="#007aff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="who">
+            <div class="avatar" aria-hidden="true">S</div>
+            <div class="name">Stan <svg width="6" height="10" viewBox="0 0 6 10" aria-hidden="true"><path d="m1 1 4 4-4 4" fill="none" stroke="#8a8a8e" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          </div>
+          <span></span>
+        </div>
+        <div class="thread" id="thread" tabindex="0" aria-label="Conversation"></div>
+        <div class="compose" aria-hidden="true"><span class="plus">+</span><span class="field">Text Message</span></div>
+        <div class="homebar" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+  </main>
+</div>
+</template>
+<script type="application/json" id="original">{"rail":{"title":"Text Stan, week by week","ledeBold":"Text BET. Five steps, one video each. Ten finalists pitch in LA.","lede":" Scroll the phone to follow one entrant from her first text to the finish.","steps":[{"n":"1","name":"Bet On Yourself","wk":"Wk 1","desc":"Post your bet. We send a carousel to start."},{"n":"2","name":"Give, Give, Give","wk":"Wk 2","desc":"Put an offer out and show how to buy it."},{"n":"3","name":"Say Yes","wk":"Wk 3","desc":"Ask real people to say yes. Post what happened."},{"n":"4","name":"Find Your People","wk":"Wk 4","desc":"Reach new people. Post what you learned."},{"n":"5","name":"Build The Future","wk":"Wk 5–6","desc":"A 60–90s pitch, due Feb 28."},{"n":"★","name":"Judging","wk":"March","desc":"Ten finalists pitch John and Vitalii in LA."}],"rhythmBold":"Every week:","rhythm":"Monday the step unlocks, Wednesday a nudge if it isn't done, Friday a Wall feature, Sunday a recap.","foot":"Maya, her business and every number in the thread are illustrative. Copy follows the Nov 16 rules; step names are working names until John and Vitalii write the resolutions."},"thread":[{"stamp":"Tue, Jan 19 at 9:41 AM","step":1},{"me":"BET"},{"stan":"Welcome in. Stan is betting $1M on one Entrepreneur. Place your bet, take five steps by Feb 28 and post your progress. We're flying out ten finalists to pitch in LA."},{"stan":"First, where are you today? Reply 1, 2 or 3.\n1  Just an idea\n2  Started, no sales yet\n3  Already making money"},{"me":"1"},{"stan":"In one line, what are you building, and for who?"},{"me":"Weekly meal prep for night-shift nurses"},{"stan":"Love it. Now place your bet. What's one number you'll hit by Feb 28? Customers, sales or sign-ups all work."},{"me":"20 paying subscribers"},{"stan":"And where's that number today?"},{"me":"0"},{"stan":"Lock in your bet? 0 → 20 paying subscribers by Feb 28."},{"me":"Lock it in"},{"stan":"Bet placed. 0 → 20 paying subscribers by Feb 28. "},{"stan":"Step 1: Bet On Yourself. Post one video: what you're building, your number and why now. Then reply here with the link, and it goes straight onto your Wall card."},{"stan":"Stanley made you a ready-made carousel with your bet on it, so you have something to post right away: stan.com/bet/maya/carousel"},{"stan":"Post on Instagram, X, or LinkedIn for us to verify."},{"stamp":"Tue, Jan 19 at 8:15 PM","step":1},{"me":"instagram.com/reel/maya-bets"},{"stan":"Instagram - well done. Looks like your handle is @maya-bets, is that right?"},{"me":"Thats me"},{"stan":"Connect your Instagram here and we'll track your progress throughout, give you posting ideas, analytics, and even can publish right through Stan.\n\nHere's your link: stan.com/bet/connect"},{"stan":"Once you connect, your video lands on your Wall card and every step after it lands there too."},{"me":"Just connected"},{"stan":"One step closer to building your future. Your bet is live on the Wall: stan.com/bet/maya"},{"stan":"Know someone who should bet on themselves too? Send them stan.com/bet"},{"me":"What can I do for Step 2?"},{"stan":"Good question. I'm here as your broadcast as steps come in, join the community for any other questions:\n\nstan.com/bet/community"},{"stamp":"Sun, Jan 24 at 6:00 PM","step":1},{"stan":"Week 1 recap: 4,812 Entrepreneurs placed a bet, and your card is live on the Wall. Step 2 opens tomorrow."},{"stamp":"Mon, Jan 25 at 9:00 AM","step":2},{"stan":"Step 2: Give, Give, Give. Put an offer out there, new or existing, and post a video that shows people how to buy it."},{"stan":"Stan Store gets you there fast, with a free challenge trial: stan.store/bet. Any tool counts. Live workshop Wednesday at 5pm PT: build your offer in an hour."},{"stamp":"Wed, Jan 27 at 7:02 PM","step":2},{"me":"instagram.com/reel/maya-offer"},{"stan":"Step 2 done. Your offer is on your Wall card. Two down, three to go."},{"stamp":"Fri, Jan 29 at 10:00 AM","step":2},{"stan":"On the Wall this week: Dre in Atlanta went from an idea to 6 preorders in five days. Watch: stan.com/bet/wall"},{"stamp":"Mon, Feb 1 at 9:00 AM","step":3},{"stan":"Step 3: Say Yes. Ask real people to say yes to your offer, then post a video about what happened, whatever they said."},{"stamp":"Wed, Feb 3 at 12:00 PM","step":3},{"stan":"How's Step 3 going? Reply 1 if you've posted, 2 if you're stuck."},{"me":"2"},{"stan":"Most first yeses come from people who already know you. Send your link to 10 nurses you've worked with, today. Tonight's live session is on first sales: stan.com/bet/live"},{"stamp":"Thu, Feb 4 at 11:48 PM","step":3},{"shot":{"app":"Stan Store · now","big":"New subscriber","line":"Weekly meal prep","amt":"$45.00 / week"}},{"me":"FIRST SUBSCRIBER"},{"stan":"That's a yes. Post the moment and send the link here for Step 3."},{"stamp":"Fri, Feb 5 at 8:10 AM","step":3},{"me":"instagram.com/reel/maya-first-yes"},{"stan":"Step 3 done. You're invited into the Bet On Yourself community, where builders help each other through Feb 28: stan.com/bet/community"},{"stamp":"Mon, Feb 8 at 9:00 AM","step":4},{"stan":"Step 4: Find Your People. Reach new people this week with outreach, a collab, a meetup or a launch. Then post a video about what you learned."},{"stamp":"Sun, Feb 14 at 1:00 PM","step":4},{"stan":"Half the country is betting on the game today. You've been betting on yourself for four weeks."},{"me":"Did a collab with a nurses' podcast. 7 new subscribers from it"},{"stan":"That's finding your people. Post what you learned and send the link here."},{"me":"instagram.com/reel/maya-collab"},{"stan":"Step 4 done. Four down, one to go."},{"stamp":"Mon, Feb 15 at 9:00 AM","step":5},{"stan":"Step 5: Build The Future. Post a 60 to 90 second pitch: where you started, what you did, where you landed. Due Sun Feb 28 at 11:59pm PT."},{"stamp":"Sun, Feb 21 at 5:00 PM","step":5},{"stan":"New bets close tonight. You're in. Know someone who should be? stan.com/bet"},{"stamp":"Fri, Feb 26 at 10:00 AM","step":5},{"stan":"Two days left. Your bet was 0 → 20. Where are you now?"},{"me":"14 subscribers"},{"stan":"From 0 to 14 in six weeks. Put that in your pitch and send the link here by Sunday night."},{"stamp":"Sun, Feb 28 at 8:12 PM","step":5},{"me":"instagram.com/reel/maya-pitch"},{"stan":"Step 5 done. All five steps are posted, so you're eligible for judging."},{"stamp":"Mon, Mar 1 at 9:00 AM","step":6},{"stan":"Thank you for betting on yourself. Your five posts stay on the Wall. Reviewers and a panel go through every finisher, and John and Vitalii announce the ten finalists Fri Mar 12."},{"stan":"Whatever happens, keep building with the community: stan.com/bet/community"},{"stamp":"Fri, Mar 12 at 10:00 AM","step":6},{"stan":"The ten are in, and they're flying to LA. The winner is picked live the week of Mar 22. Meet them: stan.com/bet/finalists"}]}</script>
+<script type="application/json" id="current">{"rail":{"title":"Text Stan, week by week","ledeBold":"Text BET. Five steps, one video each. Ten finalists pitch in LA.","lede":" Scroll the phone to follow one entrant from her first text to the finish.","steps":[{"n":"1","name":"Bet On Yourself","wk":"Wk 1","desc":"Post your bet. We send a carousel to start."},{"n":"2","name":"Give, Give, Give","wk":"Wk 2","desc":"Put an offer out and show how to buy it."},{"n":"3","name":"Say Yes","wk":"Wk 3","desc":"Ask real people to say yes. Post what happened."},{"n":"4","name":"Find Your People","wk":"Wk 4","desc":"Reach new people. Post what you learned."},{"n":"5","name":"Build The Future","wk":"Wk 5–6","desc":"A 60–90s pitch, due Feb 28."},{"n":"★","name":"Judging","wk":"March","desc":"Ten finalists pitch John and Vitalii in LA."}],"rhythmBold":"Every week:","rhythm":"Monday the step unlocks, Wednesday a nudge if it isn't done, Friday a Wall feature, Sunday a recap.","foot":"Maya, her business and every number in the thread are illustrative. Copy follows the Nov 16 rules; step names are working names until John and Vitalii write the resolutions."},"thread":[{"stamp":"Tue, Jan 19 at 9:41 AM","step":1},{"me":"BET"},{"stan":"Welcome in. Stan is betting $1M on one Entrepreneur. Place your bet, take five steps by Feb 28 and post your progress. We're flying out ten finalists to pitch in LA."},{"stan":"First, where are you today? Reply 1, 2 or 3.\n1  Just an idea\n2  Started, no sales yet\n3  Already making money"},{"me":"1"},{"stan":"In one line, what are you building, and for who?"},{"me":"Weekly meal prep for night-shift nurses"},{"stan":"Love it. Now place your bet. What's one number you'll hit by Feb 28? Customers, sales or sign-ups all work."},{"me":"20 paying subscribers"},{"stan":"And where's that number today?"},{"me":"0"},{"stan":"Lock in your bet? 0 → 20 paying subscribers by Feb 28."},{"me":"Lock it in"},{"stan":"Bet placed. 0 → 20 paying subscribers by Feb 28. "},{"stan":"Step 1: Bet On Yourself. Post one video: what you're building, your number and why now. Then reply here with the link, and it goes straight onto your Wall card."},{"stan":"Stanley made you a ready-made carousel with your bet on it, so you have something to post right away: stan.com/bet/maya/carousel"},{"stan":"Post on Instagram, X, or LinkedIn for us to verify."},{"stamp":"Tue, Jan 19 at 8:15 PM","step":1},{"me":"instagram.com/reel/maya-bets"},{"stan":"Instagram - well done. Looks like your handle is @maya-bets, is that right?"},{"me":"Thats me"},{"stan":"Connect your Instagram here and we'll track your progress throughout, give you posting ideas, analytics, and even can publish right through Stan.\n\nHere's your link: stan.com/bet/connect"},{"stan":"Once you connect, your video lands on your Wall card and every step after it lands there too."},{"me":"Just connected"},{"stan":"One step closer to building your future. Your bet is live on the Wall: stan.com/bet/maya"},{"stan":"Know someone who should bet on themselves too? Send them stan.com/bet"},{"me":"What can I do for Step 2?"},{"stan":"Good question. I'm here as your broadcast as steps come in, join the community for any other questions:\n\nstan.com/bet/community"},{"stamp":"Sun, Jan 24 at 6:00 PM","step":1},{"stan":"Week 1 recap: 4,812 Entrepreneurs placed a bet, and your card is live on the Wall. Step 2 opens tomorrow."},{"stamp":"Mon, Jan 25 at 9:00 AM","step":2},{"stan":"Step 2: Give, Give, Give. Put an offer out there, new or existing, and post a video that shows people how to buy it."},{"stan":"Stan Store gets you there fast, with a free challenge trial: stan.store/bet. Any tool counts. Live workshop Wednesday at 5pm PT: build your offer in an hour."},{"stamp":"Wed, Jan 27 at 7:02 PM","step":2},{"me":"instagram.com/reel/maya-offer"},{"stan":"Step 2 done. Your offer is on your Wall card. Two down, three to go."},{"stamp":"Fri, Jan 29 at 10:00 AM","step":2},{"stan":"On the Wall this week: Dre in Atlanta went from an idea to 6 preorders in five days. Watch: stan.com/bet/wall"},{"stamp":"Mon, Feb 1 at 9:00 AM","step":3},{"stan":"Step 3: Say Yes. Ask real people to say yes to your offer, then post a video about what happened, whatever they said."},{"stamp":"Wed, Feb 3 at 12:00 PM","step":3},{"stan":"How's Step 3 going? Reply 1 if you've posted, 2 if you're stuck."},{"me":"2"},{"stan":"Most first yeses come from people who already know you. Send your link to 10 nurses you've worked with, today. Tonight's live session is on first sales: stan.com/bet/live"},{"stamp":"Thu, Feb 4 at 11:48 PM","step":3},{"shot":{"app":"Stan Store · now","big":"New subscriber","line":"Weekly meal prep","amt":"$45.00 / week"}},{"me":"FIRST SUBSCRIBER"},{"stan":"That's a yes. Post the moment and send the link here for Step 3."},{"stamp":"Fri, Feb 5 at 8:10 AM","step":3},{"me":"instagram.com/reel/maya-first-yes"},{"stan":"Step 3 done. You're invited into the Bet On Yourself community, where builders help each other through Feb 28: stan.com/bet/community"},{"stamp":"Mon, Feb 8 at 9:00 AM","step":4},{"stan":"Step 4: Find Your People. Reach new people this week with outreach, a collab, a meetup or a launch. Then post a video about what you learned."},{"stamp":"Sun, Feb 14 at 1:00 PM","step":4},{"stan":"Half the country is betting on the game today. You've been betting on yourself for four weeks."},{"me":"Did a collab with a nurses' podcast. 7 new subscribers from it"},{"stan":"That's finding your people. Post what you learned and send the link here."},{"me":"instagram.com/reel/maya-collab"},{"stan":"Step 4 done. Four down, one to go."},{"stamp":"Mon, Feb 15 at 9:00 AM","step":5},{"stan":"Step 5: Build The Future. Post a 60 to 90 second pitch: where you started, what you did, where you landed. Due Sun Feb 28 at 11:59pm PT."},{"stamp":"Sun, Feb 21 at 5:00 PM","step":5},{"stan":"New bets close tonight. You're in. Know someone who should be? stan.com/bet"},{"stamp":"Fri, Feb 26 at 10:00 AM","step":5},{"stan":"Two days left. Your bet was 0 → 20. Where are you now?"},{"me":"14 subscribers"},{"stan":"From 0 to 14 in six weeks. Put that in your pitch and send the link here by Sunday night."},{"stamp":"Sun, Feb 28 at 8:12 PM","step":5},{"me":"instagram.com/reel/maya-pitch"},{"stan":"Step 5 done. All five steps are posted, so you're eligible for judging."},{"stamp":"Mon, Mar 1 at 9:00 AM","step":6},{"stan":"Thank you for betting on yourself. Your five posts stay on the Wall. Reviewers and a panel go through every finisher, and John and Vitalii announce the ten finalists Fri Mar 12."},{"stan":"Whatever happens, keep building with the community: stan.com/bet/community"},{"stamp":"Fri, Mar 12 at 10:00 AM","step":6},{"stan":"The ten are in, and they're flying to LA. The winner is picked live the week of Mar 22. Meet them: stan.com/bet/finalists"}]}</script>
+<script id="app-js">
+(function () {
+  "use strict";
+  // ---- Source pieces, kept so a save can rebuild this exact page with new text ----
+  var HEAD = '<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Text Stan Walkthrough</title>\n<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">';
+  var CSS = document.getElementById("app-css").textContent;
+  var SHELL = document.getElementById("shell").innerHTML;
+  var JS = document.getElementById("app-js").textContent;
+  var ORIGINAL = JSON.parse(document.getElementById("original").textContent);
+  var saved = JSON.parse(document.getElementById("current").textContent);
+  var state = clone(saved);
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function json(o) { return JSON.stringify(o).replace(/</g, "\\u003c"); }
+  function buildDoc(s) {
+    return "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n" + HEAD +
+      "\n<style id=\"app-css\">" + CSS + "</style>\n</head>\n<body>\n" +
+      "<template id=\"shell\">" + SHELL + "</template>\n" +
+      "<script type=\"application/json\" id=\"original\">" + json(ORIGINAL) + "<\/script>\n" +
+      "<script type=\"application/json\" id=\"current\">" + json(s) + "<\/script>\n" +
+      "<script id=\"app-js\">" + JS + "<\/script>\n</body>\n</html>\n";
+  }
+
+  // ---- Mount ----
+  document.body.appendChild(document.getElementById("shell").content.cloneNode(true));
+  var page = document.getElementById("page");
+  var thread = document.getElementById("thread");
+  var stepsEl = document.getElementById("steps");
+  var statusEl = document.getElementById("status");
+  var editBtn = document.getElementById("edit");
+  var saveBtn = document.getElementById("save");
+  var revertBtn = document.getElementById("revert");
+  var playBtn = document.getElementById("play");
+  var editing = false, dirty = false, api = null, apiChecked = false;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function setStatus(text, kind) {
+    statusEl.textContent = text;
+    statusEl.className = "status" + (kind ? " " + kind : "");
+  }
+  function markDirty() {
+    dirty = true;
+    setStatus("Unsaved changes", "warn");
+    updateButtons();
+  }
+  function sameAsOriginal() { return JSON.stringify(state) === JSON.stringify(ORIGINAL); }
+  function updateButtons() {
+    saveBtn.disabled = !dirty;
+    revertBtn.disabled = sameAsOriginal() && JSON.stringify(saved) === JSON.stringify(ORIGINAL);
+  }
+
+  // Make a node editable, writing its text back through set()
+  function bindEdit(node, get, set) {
+    node.textContent = get();
+    node.setAttribute("data-edit", "");
+    if (editing) {
+      try { node.contentEditable = "plaintext-only"; } catch (e) { node.contentEditable = "true"; }
+      if (node.contentEditable !== "plaintext-only") node.contentEditable = "true";
+      node.spellcheck = true;
+      node.addEventListener("input", function () {
+        set(node.innerText.replace(/\n$/, ""));
+        markDirty();
+      });
+      node.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") node.blur();
+        e.stopPropagation();
+      });
+      node.addEventListener("click", function (e) { e.stopPropagation(); });
+    }
+  }
+
+  var linkRe = /((?:stan\.com|stan\.store|instagram\.com|tiktok\.com)\/[^\s]*[^\s.,])/g;
+  function addLinked(el, text) {
+    var last = 0, m;
+    linkRe.lastIndex = 0;
+    while ((m = linkRe.exec(text))) {
+      if (m.index > last) el.appendChild(document.createTextNode(text.slice(last, m.index)));
+      var a = document.createElement("a");
+      a.textContent = m[1];
+      a.href = "#";
+      a.addEventListener("click", function (e) { e.preventDefault(); });
+      el.appendChild(a);
+      last = m.index + m[1].length;
+    }
+    if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  // ---- Rail ----
+  function renderRail() {
+    var r = state.rail;
+    [["r-title", "title"], ["r-ledeBold", "ledeBold"], ["r-lede", "lede"], ["r-rhythmBold", "rhythmBold"], ["r-rhythm", "rhythm"], ["r-foot", "foot"]].forEach(function (p) {
+      var old = document.getElementById(p[0]);
+      var node = old.cloneNode(false);
+      old.parentNode.replaceChild(node, old);
+      bindEdit(node, function () { return r[p[1]]; }, function (v) { r[p[1]] = v; });
+    });
+    stepsEl.innerHTML = "";
+    r.steps.forEach(function (s, i) {
+      var row = document.createElement("div");
+      row.className = "step";
+      row.dataset.step = i + 1;
+      row.tabIndex = 0;
+      row.setAttribute("role", "button");
+      var n = document.createElement("span"); n.className = "n"; n.textContent = s.n;
+      var t = document.createElement("span"); t.className = "t";
+      var name = document.createElement("span");
+      var wk = document.createElement("small");
+      t.appendChild(name); t.appendChild(wk);
+      var d = document.createElement("span"); d.className = "d";
+      bindEdit(name, function () { return s.name; }, function (v) { s.name = v; });
+      bindEdit(wk, function () { return s.wk; }, function (v) { s.wk = v; });
+      bindEdit(d, function () { return s.desc; }, function (v) { s.desc = v; });
+      row.appendChild(n); row.appendChild(t); row.appendChild(d);
+      function go() { if (!editing) jumpTo(i + 1); }
+      row.addEventListener("click", go);
+      row.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      stepsEl.appendChild(row);
+    });
+  }
+
+  // ---- Thread ----
+  function toolButton(label, title, fn) {
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = label; b.title = title; b.setAttribute("aria-label", title);
+    b.addEventListener("click", function (e) { e.stopPropagation(); fn(); });
+    return b;
+  }
+  function renderThread(focusIndex) {
+    var keep = thread.scrollTop;
+    thread.innerHTML = "";
+    var prev = null;
+    state.thread.forEach(function (item, i) {
+      if (item.stamp !== undefined) {
+        var sr = document.createElement("div");
+        sr.className = "stamp-row";
+        var s = document.createElement("div");
+        s.className = "stamp";
+        s.dataset.step = item.step || "";
+        if (editing) {
+          bindEdit(s, function () { return item.stamp; }, function (v) { item.stamp = v; });
+        } else {
+          var parts = item.stamp.split(" at ");
+          var b = document.createElement("b");
+          b.textContent = parts[0];
+          s.appendChild(b);
+          if (parts.length > 1) s.appendChild(document.createTextNode(" at " + parts.slice(1).join(" at ")));
+        }
+        sr.appendChild(s);
+        thread.appendChild(sr);
+        prev = null;
+        return;
+      }
+      var who = item.shot ? "me" : (item.stan !== undefined ? "stan" : "me");
+      var row = document.createElement("div");
+      row.className = "row " + who + (prev && prev !== who ? " gap" : "");
+      var body;
+      if (item.shot) {
+        body = document.createElement("div");
+        body.className = "shot";
+        body.setAttribute("role", "img");
+        body.setAttribute("aria-label", "Screenshot: " + item.shot.big + ", " + item.shot.amt);
+        var card = document.createElement("div"); card.className = "card";
+        ["app", "big", "line", "amt"].forEach(function (k) {
+          var f = document.createElement("div"); f.className = k;
+          bindEdit(f, function () { return item.shot[k]; }, function (v) { item.shot[k] = v; });
+          card.appendChild(f);
+        });
+        body.appendChild(card);
+      } else {
+        body = document.createElement("div");
+        body.className = "bubble";
+        var key = who;
+        if (editing) {
+          bindEdit(body, function () { return item[key]; }, function (v) { item[key] = v; });
+        } else {
+          addLinked(body, item[key]);
+        }
+      }
+      var tools = document.createElement("span");
+      tools.className = "tools";
+      if (!item.shot) {
+        tools.appendChild(toolButton("⇄", "Move to the other side", function () {
+          if (item.stan !== undefined) { item.me = item.stan; delete item.stan; } else { item.stan = item.me; delete item.me; }
+          markDirty(); renderThread();
+        }));
+      }
+      tools.appendChild(toolButton("+", "Add a message below", function () {
+        var n = {}; n[who === "stan" ? "stan" : "me"] = "New message";
+        state.thread.splice(i + 1, 0, n);
+        markDirty(); renderThread(i + 1);
+      }));
+      tools.appendChild(toolButton("×", "Delete this message", function () {
+        state.thread.splice(i, 1);
+        markDirty(); renderThread();
+      }));
+      if (who === "me") { row.appendChild(tools); row.appendChild(body); }
+      else { row.appendChild(body); row.appendChild(tools); }
+      if (focusIndex === i) row.dataset.focus = "1";
+      thread.appendChild(row);
+      prev = who;
+    });
+    thread.scrollTop = keep;
+    var f = thread.querySelector('[data-focus="1"] .bubble');
+    if (f) {
+      f.focus();
+      try { var range = document.createRange(); range.selectNodeContents(f); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range); } catch (e) {}
+    }
+    setActive();
+  }
+
+  // ---- Rail sync with the phone ----
+  function stamps() { return Array.prototype.slice.call(thread.querySelectorAll(".stamp")).filter(function (s) { return s.dataset.step; }); }
+  function setActive() {
+    var top = thread.scrollTop + 140, step = 1;
+    stamps().forEach(function (s) { if (s.parentNode.offsetTop <= top) step = +s.dataset.step; });
+    if (thread.scrollTop + thread.clientHeight >= thread.scrollHeight - 4) step = state.rail.steps.length;
+    Array.prototype.forEach.call(stepsEl.children, function (b) {
+      var n = +b.dataset.step;
+      b.classList.toggle("on", n === step);
+      b.classList.toggle("done", n < step);
+    });
+  }
+  function jumpTo(step) {
+    stopPlay();
+    var t = stamps().filter(function (s) { return +s.dataset.step === step; })[0];
+    if (t) thread.scrollTo({ top: t.parentNode.offsetTop - 8, behavior: reduce ? "auto" : "smooth" });
+  }
+  thread.addEventListener("scroll", setActive, { passive: true });
+
+  // ---- Play ----
+  var playing = false, raf = null, lastT = 0;
+  function tick(t) {
+    if (!playing) return;
+    var dt = lastT ? (t - lastT) : 16;
+    lastT = t;
+    thread.scrollTop += dt * 0.06;
+    if (thread.scrollTop + thread.clientHeight >= thread.scrollHeight - 1) { stopPlay(); return; }
+    raf = requestAnimationFrame(tick);
+  }
+  function startPlay() {
+    if (thread.scrollTop + thread.clientHeight >= thread.scrollHeight - 1) thread.scrollTop = 0;
+    playing = true; lastT = 0;
+    playBtn.textContent = "Pause";
+    if (reduce) {
+      var next = stamps().filter(function (s) { return s.parentNode.offsetTop > thread.scrollTop + 10; })[0];
+      thread.scrollTop = next ? next.parentNode.offsetTop - 8 : thread.scrollHeight;
+      stopPlay();
+      return;
+    }
+    raf = requestAnimationFrame(tick);
+  }
+  function stopPlay() {
+    playing = false;
+    if (raf) cancelAnimationFrame(raf);
+    playBtn.textContent = reduce ? "Next moment" : "Play the six weeks";
+  }
+  playBtn.addEventListener("click", function () { playing ? stopPlay() : startPlay(); });
+  document.getElementById("restart").addEventListener("click", function () { stopPlay(); thread.scrollTop = 0; setActive(); });
+  ["wheel", "touchstart", "pointerdown", "keydown"].forEach(function (ev) {
+    thread.addEventListener(ev, function () { if (playing) stopPlay(); }, { passive: true });
+  });
+
+  // ---- Edit, save, revert ----
+  function renderAll() { renderRail(); renderThread(); }
+  editBtn.addEventListener("click", function () {
+    stopPlay();
+    editing = !editing;
+    page.classList.toggle("editing", editing);
+    editBtn.textContent = editing ? "Done Editing" : "Edit Text";
+    renderAll();
+    if (!dirty) setStatus(editing ? "Editing" : "");
+  });
+
+  function getApi() {
+    if (apiChecked) return Promise.resolve(api);
+    if (!window.claude || typeof window.claude.use !== "function") return Promise.resolve(null);
+    return window.claude.use("artifact").then(function (a) { api = a; apiChecked = true; return a; }, function () { apiChecked = true; return null; });
+  }
+  function explain(err) {
+    var code = (err && (err.code || err.name || err.message)) || "";
+    if (/conflict/i.test(code)) return ["Someone else saved at the same time. The page has reloaded to their version, so make your edit again.", "bad"];
+    if (/not_granted|not_writer|permission|forbidden/i.test(code)) return ["You can view this page, but only its owner can save changes.", "bad"];
+    return ["Couldn't save (" + code + "). Your edits are still on screen; try Save again.", "bad"];
+  }
+  function publish(s, doneText) {
+    saveBtn.disabled = true; revertBtn.disabled = true;
+    setStatus("Saving…");
+    return getApi().then(function (a) {
+      if (!a) {
+        setStatus("Saving isn't available in this view. Open the page on claude.ai to save.", "bad");
+        updateButtons();
+        return;
+      }
+      return a.publish(buildDoc(s)).then(function () {
+        saved = clone(s); dirty = false;
+        setStatus(doneText, "good");
+        updateButtons();
+      });
+    }).catch(function (err) {
+      var e = explain(err);
+      setStatus(e[0], e[1]);
+      updateButtons();
+    });
+  }
+  saveBtn.addEventListener("click", function () {
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    publish(state, "Saved. Everyone who opens this page now sees this version.");
+  });
+
+  var armTimer = null;
+  revertBtn.addEventListener("click", function () {
+    if (!revertBtn.classList.contains("arm")) {
+      revertBtn.classList.add("arm");
+      revertBtn.textContent = "Click again to revert";
+      armTimer = setTimeout(function () { revertBtn.classList.remove("arm"); revertBtn.textContent = "Revert to Original"; }, 4000);
+      return;
+    }
+    clearTimeout(armTimer);
+    revertBtn.classList.remove("arm");
+    revertBtn.textContent = "Revert to Original";
+    state = clone(ORIGINAL);
+    renderAll();
+    dirty = true;
+    publish(state, "Reverted to the original draft and saved.");
+  });
+
+  renderAll();
+  updateButtons();
+  setStatus(JSON.stringify(saved) === JSON.stringify(ORIGINAL) ? "Original draft" : "Showing saved edits");
+  stopPlay();
+})();
+</script>
+</body>
+</html>
